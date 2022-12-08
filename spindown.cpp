@@ -82,6 +82,9 @@ int main()
     int timeout;
     while (1)
     {
+        // Ignoring comments
+        while (config.peek() == '#')
+            config.ignore(1000, '\n');
         config >> device >> timeout;
         if (config.eof())
             break;

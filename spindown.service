@@ -1,0 +1,8 @@
+[Unit]
+Description=Idle disk spindown service
+
+[Service]
+ExecStart=/usr/bin/spindownd
+
+[Install]
+WantedBy=multi-user.target

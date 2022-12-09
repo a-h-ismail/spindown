@@ -96,18 +96,18 @@ int main()
     config.open("/etc/spindown.conf");
     string device;
     int timeout;
-    while (1)
+    do
     {
         // Ignoring comments
         while (config.peek() == '#')
             config.ignore(1000, '\n');
         config >> device >> timeout;
         // When the stream fails either due to reaching eof or an error, break out of the loop.
-        if (config.fail() || config.eof())
+        if (config.fail())
             break;
         tmp = new block_device(device.c_str(), timeout);
         disks.push_back(tmp);
-    }
+    } while (!config.eof());
     int i;
     // Main loop
     while (1)

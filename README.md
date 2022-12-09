@@ -8,10 +8,13 @@ Some Hard disk drives firmware does not honor Linux's disk APM, which leads to d
 
 ## Setup and installation
 Install `hdparm` (required to issue the standby command) and `g++` (to build the binary) using your package manager :
+
 For Ubuntu/Debian:
+
 `sudo apt install hdparm g++`
 
 For Fedora:
+
 `sudo dnf install hdparm g++`
 
 

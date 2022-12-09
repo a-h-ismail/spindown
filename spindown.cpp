@@ -56,7 +56,7 @@ public:
         stat_file.open(stat_filename);
         if (stat_file.fail())
         {
-            cout << "The block device " << device << "does not exist, ignoring..." << endl;
+            cerr << "The block device " << device << " does not exist, ignoring..." << endl;
         }
     }
     block_device()
@@ -108,6 +108,11 @@ int main()
         tmp = new block_device(device.c_str(), timeout);
         disks.push_back(tmp);
     } while (!config.eof());
+    if (disks.size() == 0)
+    {
+        cerr << "No disk found in configuration file, exiting." << endl;
+        exit(1);
+    }
     int i;
     // Main loop
     while (1)

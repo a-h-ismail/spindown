@@ -10,16 +10,21 @@ SPDX-License-Identifier: GPL-2.0
 using namespace std;
 class block_device
 {
-public:
+private:
+    string standby_command;
+    string device;
     ifstream stat_file;
-    int timeout_minutes, inactive_minutes;
     char old_stat[250], new_stat[250];
-    string device, standby_command;
     bool spun_down;
+
+public:
+    int timeout_minutes, inactive_minutes;
 
     // The function to call in a loop to update stats and spindown the disk if needed.
     void loop()
     {
+        if (stat_file.fail())
+            return;
         stat_file.sync();
         stat_file.getline(new_stat, 249);
         stat_file.seekg(0);
@@ -37,6 +42,10 @@ public:
             spun_down = true;
         }
     }
+    string get_device()
+    {
+        return device;
+    }
     // Set the device to be tracked by the object
     void set_block_device(const char *device_name)
     {
@@ -45,6 +54,10 @@ public:
         char stat_filename[17 + device.size()];
         sprintf(stat_filename, "/sys/block/%s/stat", device.c_str());
         stat_file.open(stat_filename);
+        if (stat_file.fail())
+        {
+            cout << "The block device " << device << "does not exist, ignoring..." << endl;
+        }
     }
     block_device()
     {
@@ -52,11 +65,14 @@ public:
         inactive_minutes = 0;
         old_stat[0] = new_stat[0] = '\0';
     }
-    block_device(block_device&)
+    block_device(block_device &source)
     {
-        timeout_minutes = 10;
-        inactive_minutes = 0;
-        old_stat[0] = new_stat[0] = '\0';
+        timeout_minutes = source.timeout_minutes;
+        inactive_minutes = source.inactive_minutes;
+        device = source.device;
+        set_block_device(device.c_str());
+        strcpy(old_stat, source.old_stat);
+        strcpy(new_stat, source.new_stat);
     }
     block_device(const char *device_name, int inactivity_delay_minutes = 10)
     {
@@ -73,7 +89,7 @@ public:
 };
 int main()
 {
-    vector<block_device*> disks;
+    vector<block_device *> disks;
     block_device *tmp;
     // Read the disk name from config and its timeout
     ifstream config;
@@ -86,17 +102,21 @@ int main()
         while (config.peek() == '#')
             config.ignore(1000, '\n');
         config >> device >> timeout;
-        if (config.eof())
+        // When the stream fails either due to reaching eof or an error, break out of the loop.
+        if (config.fail() || config.eof())
             break;
         tmp = new block_device(device.c_str(), timeout);
         disks.push_back(tmp);
     }
     int i;
+    // Main loop
     while (1)
     {
-        for (i = 0; i < disks.size();++i)
+        for (i = 0; i < disks.size(); ++i)
             disks[i]->loop();
         sleep(60);
     }
+    for (i = 0; i < disks.size(); ++i)
+        delete disks[i];
     return 0;
 }

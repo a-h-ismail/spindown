@@ -1,9 +1,9 @@
 #!/bin/bash
 if [[ $EUID -ne 0 ]]; then
-    echo "This script must be run as root."
+  echo "This script must be run as root."
   exit 1
 else
-    echo 'Installing Idle disk spindown service.'
+  echo 'Installing Idle disk spindown service.'
 fi
 
 g++ spindown.cpp -O2 -o spindownd

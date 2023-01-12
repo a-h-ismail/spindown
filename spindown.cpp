@@ -20,8 +20,8 @@ private:
 public:
     int timeout_minutes, inactive_minutes;
 
-    // The function to call in a loop to update stats and spindown the disk if needed.
-    void loop()
+    // Refresh the stats of disks and spindown if criteria match.
+    void refresh()
     {
         if (stat_file.fail())
             return;
@@ -118,7 +118,7 @@ int main()
     while (1)
     {
         for (i = 0; i < disks.size(); ++i)
-            disks[i]->loop();
+            disks[i]->refresh();
         sleep(60);
     }
     for (i = 0; i < disks.size(); ++i)

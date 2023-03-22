@@ -9,9 +9,15 @@ Some Hard disk drives firmware does not honor Linux's disk APM, which leads to d
 Install `hdparm` (required to issue the standby command) and `g++` (to build the binary) using your package manager :
 
 ### Ubuntu/Debian:
+
 `sudo apt install hdparm g++`
+
 ### Fedora:
-`sudo dnf install hdparm g++`<br>
+
+`sudo dnf install hdparm g++`
+
+---
+
 Clone the project and run the install script:
 ```
 git clone --depth 1 https://gitlab.com/a-h-ismail/spindown.git/

@@ -7,15 +7,20 @@ Some Hard disk drives firmware does not honor Linux's disk APM, which leads to d
 
 ## Setup and installation
 
+### Required packages
+
 Install `hdparm` (required to issue the standby command) and `g++` (to build the binary) using your package manager :
 
-### Ubuntu/Debian
+#### Ubuntu/Debian
 
 `sudo apt install hdparm g++`
 
-### Fedora
+#### Fedora
 
 `sudo dnf install hdparm g++`<br>
+
+### Build from source
+
 Clone the project and run the install script:
 
 ```sh
@@ -25,14 +30,14 @@ chmod +x ./install.sh
 sudo ./install.sh
 ```
 
-The install script will guide you to setup the configuration file and will automatically enable and start the systemd service. For non systemd users, you just need to start the binary `/usr/bin/spindownd` on boot.
+The install script will guide you to setup the configuration file and will automatically enable and start the systemd service. For non systemd users, you just need to start the binary `/usr/bin/spindownd` on boot (as a daemon).
 
 ## Notes
 
 - The configuration file is located at `/etc/spindown.conf`. After editing it you need to reload the binary for changes to take effect:
 `sudo systemctl restart spindown`
 
-- The tool may not be aware of some SMART self tests since they may not change usage statistics in the kernel, which may lead to aborting the test due to the tool not detecting any activity. Temporarily stop the service during self tests as follows:
+- The tool may not be aware of some SMART self tests since they may not change usage statistics in the kernel. This leads to aborting the test due to the tool not detecting any activity and sending standby command. Temporarily stop the service during self tests as follows:
 
 ```sh
 # Stop the service
